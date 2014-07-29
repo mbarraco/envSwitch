@@ -6,23 +6,22 @@
 import gtk
 import appindicator
 import os, sys, fileinput
-from subprocess import call
 from subprocess import call, Popen, PIPE
 
 class EnvironmentSwitch:
 
-    USER = "marianobarraco"
+    HOME_PATH = os.environ['HOME']
 
-    FILE = '/home/marianobarraco/Platform/web/app_dev.php'
+    APP_DEV_FILE = HOME_PATH + '/Platform/web/app_dev.php'
     ENVIRONMENT = 'DEV';
 
-    SOLR_PATH = "/home/marianobarraco/solr-4.9.0/gointegro"
+    SOLR_PATH = HOME_PATH + "/marianobarraco/solr-4.9.0/gointegro"
     SOLR_CMD = "java -jar start.jar &"
 
     DEV_SETTING_LINE = "'dev', true"
     PROD_SETTING_LINE = "'prod', false"
 
-    PLATFORM_PATH = "/home/" + USER + "/Platform"
+    PLATFORM_PATH = HOME_PATH + "/Platform"
     PROD_SETUP_CMD = "app/console assets:install /var/www/Platform/web/vdevelopment; app/console assetic:dump --env=prod"
 
     def __init__(self):
@@ -64,12 +63,11 @@ class EnvironmentSwitch:
     def prodSetup(self, widget):
         os.chdir(self.PLATFORM_PATH)
         call(self.PROD_SETUP_CMD, shell=True)
-        
+
     def switch(self, widget):
         if self.ENVIRONMENT == 'DEV':
             self.ENVIRONMENT = 'PROD'
             self.switchEnvInFile(self.DEV_SETTING_LINE, self.PROD_SETTING_LINE)
-            self.prodSetup();
         else:
             self.ENVIRONMENT = 'DEV'
             self.switchEnvInFile(self.PROD_SETTING_LINE, self.DEV_SETTING_LINE)
@@ -77,9 +75,9 @@ class EnvironmentSwitch:
         self.ind.set_label(self.ENVIRONMENT)
 
     def switchEnvInFile(self, textToSearch, textToReplace):
-            s = open(self.FILE).read()
+            s = open(self.APP_DEV_FILE).read()
             s = s.replace(textToSearch, textToReplace)
-            f = open(self.FILE, 'w')
+            f = open(self.APP_DEV_FILE, 'w')
             f.write(s)
             f.close()
 
