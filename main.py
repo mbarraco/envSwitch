@@ -8,7 +8,7 @@ import appindicator
 import os, sys, fileinput
 from subprocess import call, Popen, PIPE
 
-class EnvironmentSwitch:
+class GointegroUtilsApplet:
 
     HOME_PATH = os.environ['HOME']
 
@@ -91,5 +91,5 @@ class EnvironmentSwitch:
 
 if __name__ == "__main__":		
 
-	pomodoro = EnvironmentSwitch()
-	pomodoro.start(False)
+	gointegro_utils_applet = GointegroUtilsApplet()
+	gointegro_utils_applet.start(False)
