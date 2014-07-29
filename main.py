@@ -1,7 +1,8 @@
 #!/usr/bin/env python
-# Unity indicator for evolution-less clock and date display
-# author: phil ayres
-# 24 Oct 2011
+# Unity applet for goIntegro development utility
+# Version 0.1
+# author: mariano barraco
+# Jul 29 2014
  
 import gtk
 import appindicator
@@ -36,7 +37,7 @@ class GointegroUtilsApplet:
     def menu_setup(self):
     	self.menu = gtk.Menu()
 
-        self.switch_item = gtk.MenuItem("Switch")
+        self.switch_item = gtk.MenuItem("Switch enviroment")
         self.switch_item.connect("activate", self.switch)
         self.switch_item.show()
         self.menu.append(self.switch_item)
@@ -85,11 +86,9 @@ class GointegroUtilsApplet:
         self.ind.set_label(self.ENVIRONMENT)
         gtk.main()
 
-
     def quit(self, widget):
         sys.exit(0)
 
 if __name__ == "__main__":		
-
 	gointegro_utils_applet = GointegroUtilsApplet()
 	gointegro_utils_applet.start(False)
