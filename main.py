@@ -5,16 +5,25 @@
  
 import gtk
 import appindicator
-import os, sys, fileinput, subprocess
+import os, sys, fileinput
+from subprocess import call
+from subprocess import call, Popen, PIPE
 
 class EnvironmentSwitch:
+
+    USER = "marianobarraco"
+
     FILE = '/home/marianobarraco/Platform/web/app_dev.php'
     ENVIRONMENT = 'DEV';
 
+    SOLR_PATH = "/home/marianobarraco/solr-4.9.0/gointegro"
+    SOLR_CMD = "java -jar start.jar &"
+
     DEV_SETTING_LINE = "'dev', true"
     PROD_SETTING_LINE = "'prod', false"
-    CONSOLE_STUFF = 'cd; cd Platform; app/console assets:install /var/www/Platform/web/vdevelopment; app/console assetic:dump --env=prod'
-    CONSOLE_STUFF = 'cd'
+
+    PLATFORM_PATH = "/home/" + USER + "/Platform"
+    PROD_SETUP_CMD = "app/console assets:install /var/www/Platform/web/vdevelopment; app/console assetic:dump --env=prod"
 
     def __init__(self):
     	self.ind = appindicator.Indicator("switch-indicator",
@@ -28,30 +37,44 @@ class EnvironmentSwitch:
     def menu_setup(self):
     	self.menu = gtk.Menu()
 
-        self.switch_item = gtk.MenuItem("Switch ")
+        self.switch_item = gtk.MenuItem("Switch")
         self.switch_item.connect("activate", self.switch)
         self.switch_item.show()
         self.menu.append(self.switch_item)
+
+        self.start_solr_item = gtk.MenuItem("Start Solr")
+        self.start_solr_item.connect("activate", self.startSolr)
+        self.start_solr_item.show()
+        self.menu.append(self.start_solr_item)
+
+        self.prod_setup_item = gtk.MenuItem("Run PROD setup")
+        self.prod_setup_item.connect("activate", self.prodSetup)
+        self.prod_setup_item.show()
+        self.menu.append(self.prod_setup_item)
 
         self.quit_item = gtk.MenuItem("Quit")
         self.quit_item.connect("activate", self.quit)
         self.quit_item.show()
         self.menu.append(self.quit_item)
 
+    def startSolr(self, widget):
+        os.chdir(self.SOLR_PATH)
+        call(self.SOLR_CMD, shell=True)
+
+    def prodSetup(self, widget):
+        os.chdir(self.PLATFORM_PATH)
+        call(self.PROD_SETUP_CMD, shell=True)
+        
     def switch(self, widget):
         if self.ENVIRONMENT == 'DEV':
             self.ENVIRONMENT = 'PROD'
             self.switchEnvInFile(self.DEV_SETTING_LINE, self.PROD_SETTING_LINE)
-            # self.runConsoleStuff();
+            self.prodSetup();
         else:
             self.ENVIRONMENT = 'DEV'
             self.switchEnvInFile(self.PROD_SETTING_LINE, self.DEV_SETTING_LINE)
 
         self.ind.set_label(self.ENVIRONMENT)
-        f = open(self.FILE, 'r+')
-
-    def runConsoleStuff(self):
-        subprocess.call(self.CONSOLE_STUFF)
 
     def switchEnvInFile(self, textToSearch, textToReplace):
             s = open(self.FILE).read()
